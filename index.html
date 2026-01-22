@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinhala Archaic Numerals Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans Sinhala', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #000000;
+        }
+
+        .clock-container {
+            background: #1a1a1a;
+            padding: 60px 80px;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+            border: 2px solid #00ff00;
+        }
+
+        .clock {
+            font-size: 120px;
+            font-weight: bold;
+            font-family: 'Noto Sans Sinhala', 'Courier New', monospace;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00, 0 0 2px #00ff00;
+            text-align: left;
+            display: inline-block;
+            min-width: 950px;
+            background: #0a0a0a;
+            padding: 30px 40px;
+            border-radius: 5px;
+            border: 1px solid #003300;
+        }
+
+        .date {
+            font-size: 48px;
+            font-family: 'Noto Sans Sinhala', 'Courier New', monospace;
+            color: #00ff00;
+            text-align: left;
+            margin-top: 30px;
+            text-shadow: 0 0 10px #00ff00;
+            display: inline-block;
+            min-width: 850px;
+            background: #0a0a0a;
+            padding: 20px 30px;
+            border-radius: 5px;
+            border: 1px solid #003300;
+        }
+
+        .label {
+            font-size: 18px;
+            font-family: 'Noto Sans Sinhala', Arial, sans-serif;
+            color: #00cc00;
+            text-align: left;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date"></div>
+    </div>
+
+    <script>
+        // Sinhala Archaic Numerals
+        const sinhalaArchaic = {
+            1: '𑇡',
+            2: '𑇢',
+            3: '𑇣',
+            4: '𑇤',
+            5: '𑇥',
+            6: '𑇦',
+            7: '𑇧',
+            8: '𑇨',
+            9: '𑇩',
+            10: '𑇪',
+            20: '𑇫',
+            30: '𑇬',
+            40: '𑇭',
+            50: '𑇮',
+            60: '𑇯',
+            70: '𑇰',
+            80: '𑇱',
+            90: '𑇲',
+            100: '𑇳',
+            1000: '𑇴'
+        };
+
+        // Convert a number to Sinhala Archaic Numerals
+        function toSinhalaArchaic(num) {
+            if (num === 0) return '𑇐'; // If there's a zero character, otherwise return empty
+
+            let result = '';
+
+            // Thousands
+            const thousands = Math.floor(num / 1000);
+            if (thousands > 0) {
+                if (thousands > 1) {
+                    result += toSinhalaArchaic(thousands);
+                }
+                result += sinhalaArchaic[1000];
+                num %= 1000;
+            }
+
+            // Hundreds
+            const hundreds = Math.floor(num / 100);
+            if (hundreds > 0) {
+                if (hundreds > 1) {
+                    result += toSinhalaArchaic(hundreds);
+                }
+                result += sinhalaArchaic[100];
+                num %= 100;
+            }
+
+            // Tens
+            const tens = Math.floor(num / 10) * 10;
+            if (tens > 0) {
+                result += sinhalaArchaic[tens];
+                num %= 10;
+            }
+
+            // Ones
+            if (num > 0) {
+                result += sinhalaArchaic[num];
+            }
+
+            return result;
+        }
+
+        // Update clock display
+        function updateClock() {
+            const now = new Date();
+
+            // Get time components
+            const hours24 = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // Determine AM/PM
+            const ampm = hours24 >= 12 ? 'පව' : 'පෙව';
+
+            // Convert to 12-hour format
+            const hours12 = hours24 % 12 || 12;
+
+            // Convert to Sinhala Archaic Numerals
+            const sinhalaHours = toSinhalaArchaic(hours12);
+            const sinhalaMinutes = toSinhalaArchaic(minutes);
+            const sinhalaSeconds = toSinhalaArchaic(seconds);
+
+            // Display time with AM/PM
+            document.getElementById('clock').textContent =
+                `${ampm} ${sinhalaHours}:${sinhalaMinutes}:${sinhalaSeconds}`;
+
+            // Get date components
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1; // JavaScript months are 0-indexed
+            const day = now.getDate();
+
+            // Convert date to Sinhala Archaic Numerals
+            const sinhalaYear = toSinhalaArchaic(year);
+            const sinhalaMonth = toSinhalaArchaic(month);
+            const sinhalaDay = toSinhalaArchaic(day);
+
+            // Display date (format: YYYY-MM-DD)
+            document.getElementById('date').textContent =
+                `${sinhalaYear}-${sinhalaMonth}-${sinhalaDay}`;
+        }
+
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
